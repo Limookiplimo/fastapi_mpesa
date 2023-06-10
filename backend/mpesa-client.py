@@ -50,8 +50,7 @@ def generate_qr(qr_code: str = Path(...)):
 @mpesa.post("/callbackdata")
 async def call_back(request: Request):
     json_data = await request.json()
-
-
+    
     # Extract the desired fields
     merchant_request_id = json_data['Body']['stkCallback']['MerchantRequestID']
     checkout_request_id = json_data['Body']['stkCallback']['CheckoutRequestID']
