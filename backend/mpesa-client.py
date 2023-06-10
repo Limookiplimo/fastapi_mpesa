@@ -1,10 +1,8 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from fastapi import FastAPI, Path, Request
+from fastapi import FastAPI, Path, Request, HTTPException
 from pydantic import BaseSettings
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-
 
 
 class Settings(BaseSettings):
@@ -49,15 +47,33 @@ def generate_qr(qr_code: str = Path(...)):
     qr_code = response_json["QRCode"]
     return {"qr_code": qr_code}
 
-
-@mpesa.post("/callback")
+@mpesa.post("/callbackdata")
 async def call_back(request: Request):
-    response_data = await request.json()
-    print(response_data)
-    return templates.TemplateResponse("base.html", {"request": request, "response_data": response_data})
+    json_data = await request.json()
 
 
-@mpesa.get("/result/{result_code}")
+    # Extract the desired fields
+    merchant_request_id = json_data['Body']['stkCallback']['MerchantRequestID']
+    checkout_request_id = json_data['Body']['stkCallback']['CheckoutRequestID']
+    result_code = json_data['Body']['stkCallback']['ResultCode']
+    result_desc = json_data['Body']['stkCallback']['ResultDesc']
+    amount = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
+    mpesa_receipt_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value']
+    transaction_date = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][2]['Value']
+    phone_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][3]['Value']
+
+    # Print the extracted values
+    print("MerchantRequestID:", merchant_request_id)
+    print("CheckoutRequestID:", checkout_request_id)
+    print("ResultCode:", result_code)
+    print("ResultDesc:", result_desc)
+    print("Amount:", amount)
+    print("MpesaReceiptNumber:", mpesa_receipt_number)
+    print("TransactionDate:", transaction_date)
+    print("PhoneNumber:", phone_number)
+
+
+@mpesa.get("/stkpush")
 def payment_status():
     access_token = generate_token()
     transaction_details = {
@@ -66,10 +82,10 @@ def payment_status():
         "Timestamp":"20160216165627",
         "TransactionType": "CustomerPayBillOnline",
         "Amount": "1",
-        "PartyA":"254718428473",
+        "PartyA":"254719259795",
         "PartyB":"174379",
-        "PhoneNumber":"254718428473",
-        "CallBackURL": "https://e332-197-248-202-33.ngrok-free.app/callback",
+        "PhoneNumber":"254719259795",
+        "CallBackURL": "https://114b-197-248-202-33.ngrok-free.app/callbackdata",
         "AccountReference":"Test",
         "TransactionDesc":"Test"
     }
@@ -81,5 +97,3 @@ def payment_status():
     response = requests.post(status_url, json=transaction_details, headers=headers)
     response_json = response.json()
     return response_json
-
-
