@@ -50,7 +50,7 @@ def generate_qr(qr_code: str = Path(...)):
     return {"qr_code": qr_code}
 
 @mpesa.post("/callbackdata")
-async def call_back(request: Request):
+async def callback(request: Request):
     json_data = await request.json()
 
     transactions = []
@@ -69,7 +69,7 @@ async def call_back(request: Request):
     populate_table("Mpesa", transactions)
 
 @mpesa.get("/stkpush")
-def payment_status():
+def make_payment():
     access_token = generate_token()
     transaction_details = {
         "BusinessShortCode": "174379",
