@@ -14,7 +14,6 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 settings = Settings()
-
 mpesa = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
