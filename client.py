@@ -50,24 +50,6 @@ def generate_qr(qr_code: str = Path(...)):
     return {"qr_code": qr_code}
 
 
-@mpesa.post("/callbackdata")
-async def callback(request: Request):
-    json_data = await request.json()
-    transactions = []
-    merchant_request_id = json_data['Body']['stkCallback']['MerchantRequestID']
-    checkout_request_id = json_data['Body']['stkCallback']['CheckoutRequestID']
-    result_code = json_data['Body']['stkCallback']['ResultCode']
-    result_desc = json_data['Body']['stkCallback']['ResultDesc']
-    amount = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
-    mpesa_receipt_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value']
-    transaction_date = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][2]['Value']
-    phone_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][3]['Value']
-    transactions.append((merchant_request_id, checkout_request_id, result_code, result_desc, amount, mpesa_receipt_number, transaction_date, phone_number))
-
-    create_table("Mpesa", ["merchant_request_id VARCHAR(255)","checkout_request_id VARCHAR(255)","result_code INTEGER","result_desc VARCHAR(255)","amount INTEGER","mpesa_receipt_number VARCHAR(255)","transaction_date VARCHAR(255)","phone_number VARCHAR(255)"])
-    populate_table("Mpesa", transactions)
-
-
 @mpesa.get("/stkpush")
 def make_payment():
     access_token = generate_token()
@@ -92,3 +74,20 @@ def make_payment():
     response = requests.post(stkpush_url, json=transaction_details, headers=headers)
     response_json = response.json()
     return response_json
+
+@mpesa.post("/callbackdata")
+async def callback(request: Request):
+    json_data = await request.json()
+    transactions = []
+    merchant_request_id = json_data['Body']['stkCallback']['MerchantRequestID']
+    checkout_request_id = json_data['Body']['stkCallback']['CheckoutRequestID']
+    result_code = json_data['Body']['stkCallback']['ResultCode']
+    result_desc = json_data['Body']['stkCallback']['ResultDesc']
+    amount = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
+    mpesa_receipt_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value']
+    transaction_date = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][2]['Value']
+    phone_number = json_data['Body']['stkCallback']['CallbackMetadata']['Item'][3]['Value']
+    transactions.append((merchant_request_id, checkout_request_id, result_code, result_desc, amount, mpesa_receipt_number, transaction_date, phone_number))
+
+    create_table("Mpesa", ["merchant_request_id VARCHAR(255)","checkout_request_id VARCHAR(255)","result_code INTEGER","result_desc VARCHAR(255)","amount INTEGER","mpesa_receipt_number VARCHAR(255)","transaction_date VARCHAR(255)","phone_number VARCHAR(255)"])
+    populate_table("Mpesa", transactions)
