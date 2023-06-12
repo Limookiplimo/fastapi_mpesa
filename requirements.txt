@@ -1,0 +1,4 @@
+fastapi
+requests
+pyscopg2
+pydantic
