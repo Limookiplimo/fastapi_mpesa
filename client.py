@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 mpesa = FastAPI()
-templates = Jinja2Templates(directory="templates")
+# templates = Jinja2Templates(directory="templates")
 
 
 @mpesa.get("/token/{access_token}")
