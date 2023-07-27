@@ -1,6 +1,5 @@
 # Daraja-API Experience
-Engage Daraja API to generate qr code for payment details, stkpush prompt for online payments (C2B) and store the transaction details on postgres database. In this project, I use fast api to create scripts and ngrok to create callback urls for data consumption.
-To use daraja APIs, create a developer account [here](https://developer.safaricom.co.ke/). Further documentation can be found at the [portal](https://developer.safaricom.co.ke/Documentation).
+Engage Daraja API to generate qr code for payment details, stkpush prompt for online payments (C2B) and store the transaction details on postgres database. In this project, I use fast api to create scripts and ngrok to create callback urls for data consumption. To use daraja APIs, create a developer account [here](https://developer.safaricom.co.ke/). Further documentation can be found at the [portal](https://developer.safaricom.co.ke/Documentation).
 
 ## Access Token
 To use consume any of the apis, access token is generated and parsed to each call made to daraja apis endpoints.
